@@ -20,3 +20,8 @@
 > *  **Etkileşimli Sistem:** Kullanıcı, Discord üzerinden botla kolay ve eğlenceli bir şekilde iletişim kurabilecek.
 > * **Kullanıcı Profili:** Kullanıcının ilgi alanları ve önceki tercihleri kaydedilerek daha kişiselleştirilmiş öneriler sunulacak.
 > *  **Geliştirilebilir Yapı:** Proje ileride yeni meslekler, özellikler ve yapay zekâ destekli sistemlerle geliştirilebilecek.
+
+
+Yardıma İhtiyacım Olan Kısımlar :
+- Discord botunun belli bir veritabanına bağlamak
+- Kafamın karıştığı kısımlarda YZ desteği almak
