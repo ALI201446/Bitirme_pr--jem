@@ -1,0 +1,11 @@
+# Gizli bilgiler - ASLA repoya yüklenmemeli
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Kullanıcı verileri (kişisel bilgi içerebilir)
+data/user_profiles.json

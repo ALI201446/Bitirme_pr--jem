@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dolphins Technologies — Biz Kimiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0B1F2E;
+    --bg-panel: #123647;
+    --accent: #4FD8EB;
+    --text-main: #EAF6F6;
+    --text-muted: #8FB3BD;
+    --joke: #FF8A65;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  a { color: var(--accent); }
+
+  .wave-field {
+    position: relative;
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8vh 6vw 12vh;
+    overflow: hidden;
+  }
+
+  .wave-field svg {
+    position: absolute;
+    bottom: -4%;
+    left: 0;
+    width: 220%;
+    height: auto;
+    opacity: 0.35;
+    animation: drift 26s linear infinite;
+  }
+
+  @keyframes drift {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-45.4%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave-field svg { animation: none; }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 1.4rem;
+  }
+
+  .hero-tag .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px 2px var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    font-weight: 700;
+    color: var(--text-main);
+    max-width: 12ch;
+  }
+
+  .hero-sub {
+    margin-top: 1.6rem;
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 46ch;
+  }
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 6vw 10vh;
+  }
+
+  section {
+    padding: 4.5rem 0;
+    border-top: 1px solid rgba(143, 179, 189, 0.18);
+  }
+
+  section:first-child { border-top: none; }
+
+  .section-label {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 0.9rem;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 600;
+    max-width: 20ch;
+  }
+
+  .founder-card {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1.6rem;
+    align-items: flex-start;
+    background: var(--bg-panel);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .founder-avatar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #1c7a8c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--bg-deep);
+  }
+
+  .founder-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .founder-role {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+  }
+
+  .founder-bio {
+    margin-top: 0.9rem;
+    color: var(--text-main);
+    max-width: 56ch;
+  }
+
+  p.body-text {
+    margin-top: 1.2rem;
+    color: var(--text-muted);
+    max-width: 58ch;
+  }
+
+  .partner-card {
+    margin-top: 2rem;
+    background: var(--bg-panel);
+    border-left: 3px solid var(--joke);
+    border-radius: 4px;
+    padding: 1.6rem 1.8rem;
+  }
+
+  .partner-headline {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .partner-note {
+    margin-top: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--joke);
+  }
+
+  footer {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 3rem 6vw 4rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    border-top: 1px solid rgba(143, 179, 189, 0.18);
+  }
+
+  footer strong { color: var(--text-main); }
+
+  @media (max-width: 560px) {
+    .founder-card { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wave-field">
+  <svg viewBox="0 0 2400 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,300 C200,220 400,380 600,300 C800,220 1000,380 1200,300 C1400,220 1600,380 1800,300 C2000,220 2200,380 2400,300 L2400,500 L0,500 Z" fill="#4FD8EB"/>
+  </svg>
+  <div class="hero-content">
+    <div class="hero-tag"><span class="dot"></span> Dolphins Technologies</div>
+    <h1>Zekayı derinlerden çıkarıyoruz.</h1>
+    <p class="hero-sub">Kariyer keşfi botunun arkasındaki ekip, kurucu ve birkaç gerçek olmayan iş birliği hakkında bilmeniz gerekenler.</p>
+  </div>
+</div>
+
+<main>
+  <section>
+    <div class="section-label">Kurucu</div>
+    <h2>Tek kişilik bir mürettebat</h2>
+    <div class="founder-card">
+      <div class="founder-avatar">D</div>
+      <div>
+        <div class="founder-name">Dozdar</div>
+        <div class="founder-role">Kurucu &amp; Yazılımcı</div>
+        <p class="founder-bio">Dolphins Technologies'i kuran ve bu Discord botunu baştan sona kendisi geliştiren yazılımcı. Kariyer keşfi botunun soru akışından yapay zeka entegrasyonuna kadar her satırı ona ait.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Şirket</div>
+    <h2>Küçük bir ekip, büyük hedefler</h2>
+    <p class="body-text">Dolphins Technologies, yapay zeka destekli ürünler ve eğlenceli dijital deneyimler geliştiren bir teknoloji şirketi. Şu an için en bilinen ürünü, Discord üzerinde çalışan kariyer keşfi botu — kullanıcıların ilgi alanlarını ve yeteneklerini keşfedip onlara uygun meslekler öneriyor.</p>
+  </section>
+
+  <section>
+    <div class="section-label">İş Birlikleri</div>
+    <h2>Söylentiler dolaşıyor</h2>
+    <div class="partner-card">
+      <div class="partner-headline">🎮 Sony ile gizli bir Ar-Ge projesi mi yürütülüyor?</div>
+      <div class="partner-note">Şaka amaçlı eklenmiş bir easter egg'dir — gerçek bir iş birliği bulunmamaktadır.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>Dolphins Technologies</strong> hayali bir şirkettir; bu sayfa tamamen eğlence amaçlı hazırlanmıştır.
+</footer>
+
+</body>
+</html>
