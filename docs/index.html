@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Müziği Sen Yap - PyGame Zero Oyunu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            background: #0f172a;
+        }
+        canvas {
+            display: block;
+            border-radius: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.2);
+            background: #090d16;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 4px;
+        }
+        @keyframes pulse-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .heart-anim {
+            animation: pulse-heart 1.5s infinite;
+        }
+        .glow-title {
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.5), 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+        .glow-button {
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 35px rgba(236, 72, 153, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-between p-2 md:p-6 overflow-x-hidden select-none">
+
+    <!-- Navigation Header -->
+    <header class="w-full max-w-4xl flex flex-wrap items-center justify-between gap-4 mb-3 bg-slate-900/90 p-4 rounded-2xl border border-indigo-500/20 backdrop-blur-lg shadow-xl">
+        <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-xl shadow-md shadow-indigo-500/30">
+                🎼
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold tracking-wider uppercase bg-clip-text text-transparent bg-gradient-to-r from-slate-100 via-indigo-200 to-pink-300">
+                    Müziği Sen Yap
+                </h1>
+                <p class="text-xs text-indigo-400 font-medium tracking-wide flex items-center gap-1">
+                    <span id="levelBadge" class="bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-md text-[11px]">
+                        STAGE 1: 🎻 KEMAN SAHNESİ
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <!-- HUD Bar: Lives, Score & Pygame Zero Code Button -->
+        <div class="flex items-center gap-3 flex-wrap">
+            <!-- Hearts / Lives -->
+            <div class="flex items-center gap-1.5 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800">
+                <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase mr-1">CAN</span>
+                <div id="livesContainer" class="flex gap-1 text-lg">
+                    <i class="fa-solid fa-heart text-red-500 heart-anim"></i>
+                    <i class="fa-solid fa-heart text-red-500 heart-anim"></i>
+                    <i class="fa-solid fa-heart text-red-500 heart-anim"></i>
+                </div>
+            </div>
+
+            <!-- Score -->
+            <div class="bg-slate-950/80 px-3.5 py-1.5 rounded-xl border border-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-star text-amber-400 text-xs"></i>
+                <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">SKOR</span>
+                <span id="scoreText" class="text-base font-extrabold text-amber-300 font-mono">0</span>
+            </div>
+
+            <!-- Sound Toggle Button -->
+            <button id="muteBtn" class="bg-slate-800 hover:bg-slate-700 p-2.5 rounded-xl transition text-slate-200 text-xs border border-slate-700" title="Ses Aç/Kapat">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Game Container & Canvas Area -->
+    <main class="relative w-full max-w-4xl flex-grow flex flex-col items-center justify-center">
+        <div class="relative w-full aspect-[16/9] max-h-[500px]">
+            <canvas id="gameCanvas" class="w-full h-full"></canvas>
+
+            <!-- Start Screen Overlay -->
+            <div id="startOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md rounded-2xl flex flex-col items-center justify-between p-6 md:p-8 text-center z-10 border border-indigo-500/30">
+                
+                <!-- Menu Top Badge & Title -->
+                <div class="flex flex-col items-center mt-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 text-xs font-semibold tracking-widest uppercase mb-3">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        RİTİM & PLATFORM SERÜVENİ
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-black tracking-tight text-white glow-title uppercase mb-1">
+                        MÜZİĞİ SEN YAP
+                    </h2>
+                    <p class="text-slate-400 text-xs md:text-sm max-w-lg leading-relaxed">
+                        Notaları aş, melodiyi kesintisiz sürdür. Keman ve piyanoları toplayarak ritmi tamamla!
+                    </p>
+                </div>
+
+                <!-- Game Mechanics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl my-2">
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center">
+                        <div class="text-2xl mb-1">🎻</div>
+                        <div class="text-xs font-bold text-indigo-300 uppercase">Stage 1: Keman</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Yerden enstrümanları topla & puan kazan</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center">
+                        <div class="text-2xl mb-1">🎵</div>
+                        <div class="text-xs font-bold text-pink-400 uppercase">Nota Engelleri</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Do, Re, Mi üstünden atladıkça melodi çalar</div>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3 flex flex-col items-center text-center">
+                        <div class="text-2xl mb-1">🎹</div>
+                        <div class="text-xs font-bold text-purple-300 uppercase">Stage 2: Piyano</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">120 Puan sonrası daha hızlı tempo</div>
+                    </div>
+                </div>
+
+                <!-- Main Action Button -->
+                <div class="flex flex-col items-center gap-3 w-full max-w-md">
+                    <button id="startBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-400 hover:to-pink-500 text-white font-extrabold text-base md:text-lg py-3.5 px-8 rounded-xl glow-button hover:scale-[1.02] active:scale-[0.98] transition-all transform flex items-center justify-center gap-3 uppercase tracking-wider">
+                        <i class="fa-solid fa-play text-sm"></i> OYUNU BAŞLAT
+                    </button>
+                    
+                    <!-- Controls Bar -->
+                    <div class="flex items-center justify-center gap-4 text-[11px] text-slate-400 bg-slate-900/90 px-4 py-2 rounded-lg border border-slate-800 w-full flex-wrap">
+                        <span><kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">BOŞLUK</kbd> / <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">▲</kbd> / <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">W</kbd> : Zıpla</span>
+                        <span class="text-slate-600">|</span>
+                        <span><kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">◄</kbd> <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">►</kbd> / <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">A</kbd> <kbd class="bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-indigo-300 font-mono">D</kbd> : Hareket Et</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Over / Victory Overlay -->
+            <div id="endOverlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-6 text-center z-20 border border-indigo-500/30">
+                <div id="endIcon" class="text-5xl mb-2">🎹</div>
+                <h2 id="endTitle" class="text-3xl md:text-4xl font-extrabold mb-2 uppercase tracking-tight">Oyun Bitti!</h2>
+                <p id="endSubtitle" class="text-slate-400 text-sm mb-6">Performans İstatistikleri</p>
+                <div class="bg-slate-900/90 border border-slate-800 px-8 py-4 rounded-2xl mb-6 flex gap-8">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">TOPLAM SKOR</div>
+                        <div id="finalScore" class="text-2xl font-black text-amber-300 font-mono mt-1">0</div>
+                    </div>
+                    <div class="border-r border-slate-800"></div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">AŞILAN NOTALAR</div>
+                        <div id="finalNotes" class="text-2xl font-black text-pink-400 font-mono mt-1">0</div>
+                    </div>
+                </div>
+                <button id="restartBtn" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold text-base px-8 py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition transform flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-rotate-right"></i> TEKRAR DENE
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Touch Controls -->
+        <div class="md:hidden w-full flex justify-between items-center mt-3 px-2">
+            <div class="flex gap-2">
+                <button id="btnLeft" class="w-14 h-14 bg-slate-800/90 border border-slate-700 rounded-2xl active:bg-indigo-600 flex items-center justify-center text-2xl text-white">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button id="btnRight" class="w-14 h-14 bg-slate-800/90 border border-slate-700 rounded-2xl active:bg-indigo-600 flex items-center justify-center text-2xl text-white">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <button id="btnJump" class="w-24 h-14 bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl active:scale-95 font-bold flex items-center justify-center text-lg text-white shadow-lg">
+                <i class="fa-solid fa-arrow-up mr-1"></i> ZIPLA
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Web Audio API Synthesizer
+        class MusicEngine {
+            constructor() {
+                this.ctx = null;
+                this.isMuted = false;
+                this.melodyIndex = 0;
+                this.noteFrequencies = {
+                    'DO': 261.63,
+                    'RE': 293.66,
+                    'Mİ': 329.63,
+                    'FA': 349.23,
+                    'SOL': 392.00,
+                    'LA': 440.00,
+                    'Sİ': 493.88,
+                    'DO2': 523.25
+                };
+                this.songMelody = [
+                    'DO', 'DO', 'SOL', 'SOL', 'LA', 'LA', 'SOL',
+                    'FA', 'FA', 'Mİ', 'Mİ', 'RE', 'RE', 'DO',
+                    'SOL', 'SOL', 'FA', 'FA', 'Mİ', 'Mİ', 'RE'
+                ];
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playNoteSound(noteName, isViolin) {
+                if (this.isMuted) return;
+                this.init();
+
+                const freq = this.noteFrequencies[noteName] || 329.63;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = isViolin ? 'sawtooth' : 'triangle';
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.5);
+            }
+
+            playNextSongNote() {
+                if (this.isMuted) return;
+                const note = this.songMelody[this.melodyIndex];
+                this.playNoteSound(note, false);
+                this.melodyIndex = (this.melodyIndex + 1) % this.songMelody.length;
+            }
+
+            playCollectSound() {
+                if (this.isMuted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const freqs = [523.25, 659.25, 783.99];
+                freqs.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.15, now + idx * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + idx * 0.06 + 0.2);
+                });
+            }
+
+            playHitSound() {
+                if (this.isMuted) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.3);
+
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            }
+        }
+
+        const audio = new MusicEngine();
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = 800;
+            canvas.height = 450;
+        }
+        resizeCanvas();
+
+        let isRunning = false;
+        let score = 0;
+        let lives = 3;
+        let level = 1;
+        let notesPassed = 0;
+        let spawnTimer = 0;
+        let bgOffset = 0;
+
+        const keys = { left: false, right: false, jump: false };
+
+        const player = {
+            x: 100,
+            y: 330,
+            width: 44,
+            height: 54,
+            vy: 0,
+            isJumping: false,
+            color: '#f43f5e',
+            frame: 0
+        };
+
+        let obstacles = [];
+        let collectibles = [];
+        let floatingParticles = [];
+
+        const NOTE_TYPES = ['DO', 'RE', 'Mİ', 'FA', 'SOL', 'LA', 'Sİ'];
+
+        function resetGame() {
+            score = 0;
+            lives = 3;
+            level = 1;
+            notesPassed = 0;
+            spawnTimer = 0;
+            obstacles = [];
+            collectibles = [];
+            floatingParticles = [];
+            player.x = 100;
+            player.y = 330;
+            player.vy = 0;
+            player.isJumping = false;
+            updateHUD();
+            document.getElementById('startOverlay').classList.add('hidden');
+            document.getElementById('endOverlay').classList.add('hidden');
+        }
+
+        function updateHUD() {
+            const scoreText = document.getElementById('scoreText');
+            if (scoreText) {
+                scoreText.innerText = score;
+            }
+
+            const levelBadge = document.getElementById('levelBadge');
+            if (levelBadge) {
+                if (level === 1) {
+                    levelBadge.className = "bg-indigo-950 text-indigo-300 border border-indigo-500/40 px-2 py-0.5 rounded-full font-bold";
+                    levelBadge.innerHTML = "Bölüm 1: 🎻 Yerden Kemanları Topla!";
+                } else {
+                    levelBadge.className = "bg-purple-950 text-pink-300 border border-pink-500/40 px-2 py-0.5 rounded-full font-bold animate-pulse";
+                    levelBadge.innerHTML = "Bölüm 2: 🎹 Piyano Geçidi!";
+                }
+            }
+
+            const heartsContainer = document.getElementById('livesContainer');
+            if (heartsContainer) {
+                heartsContainer.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    if (i < lives) {
+                        heartsContainer.innerHTML += `<i class="fa-solid fa-heart text-red-500 heart-anim"></i>`;
+                    } else {
+                        heartsContainer.innerHTML += `<i class="fa-solid fa-heart text-slate-700"></i>`;
+                    }
+                }
+            }
+        }
+
+        function spawnEntities() {
+            spawnTimer++;
+            const spawnRate = (level === 1) ? 85 : 65;
+
+            if (spawnTimer > spawnRate) {
+                spawnTimer = 0;
+                
+                const noteName = NOTE_TYPES[Math.floor(Math.random() * NOTE_TYPES.length)];
+                obstacles.push({
+                    x: canvas.width + 40,
+                    y: 340,
+                    width: 36,
+                    height: 48,
+                    noteName: noteName,
+                    speed: (level === 1) ? 5 : 7,
+                    passed: false
+                });
+
+                if (Math.random() > 0.35) {
+                    collectibles.push({
+                        x: canvas.width + 120,
+                        y: 220 + Math.random() * 100,
+                        width: 36,
+                        height: 36,
+                        type: (level === 1) ? 'violin' : 'piano',
+                        speed: (level === 1) ? 5 : 7,
+                        floatOffset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        }
+
+        function addParticle(x, y, text, color) {
+            floatingParticles.push({
+                x: x,
+                y: y,
+                text: text,
+                color: color,
+                alpha: 1,
+                vy: -2
+            });
+        }
+
+        function checkCollision(rect1, rect2) {
+            return (
+                rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.y + rect1.height > rect2.y
+            );
+        }
+
+        function update() {
+            if (!isRunning) return;
+
+            if (keys.left && player.x > 30) player.x -= 5;
+            if (keys.right && player.x < canvas.width - 80) player.x += 5;
+
+            if (keys.jump && !player.isJumping) {
+                player.vy = -14;
+                player.isJumping = true;
+            }
+
+            player.vy += 0.8;
+            player.y += player.vy;
+
+            if (player.y >= 330) {
+                player.y = 330;
+                player.vy = 0;
+                player.isJumping = false;
+            }
+
+            bgOffset += (level === 1) ? 2 : 3.5;
+
+            spawnEntities();
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.x -= obs.speed;
+
+                if (!obs.passed && obs.x < player.x) {
+                    obs.passed = true;
+                    notesPassed++;
+                    score += 15;
+                    audio.playNextSongNote();
+                    addParticle(player.x, player.y - 20, `🎵 ${obs.noteName}! +15`, '#f472b6');
+
+                    if (score >= 120 && level === 1) {
+                        level = 2;
+                        addParticle(canvas.width / 2, 150, "BÖLÜM 2: PİYANO GEÇİDİ!", "#38bdf8");
+                        audio.playCollectSound();
+                    }
+                    updateHUD();
+                }
+
+                if (checkCollision(player, obs)) {
+                    lives--;
+                    audio.playHitSound();
+                    addParticle(player.x, player.y - 30, "💔 CAN GİTTİ!", "#ef4444");
+                    obstacles.splice(i, 1);
+                    updateHUD();
+
+                    if (lives <= 0) {
+                        endGame(false);
+                    }
+                    continue;
+                }
+
+                if (obs.x < -50) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            for (let i = collectibles.length - 1; i >= 0; i--) {
+                const item = collectibles[i];
+                item.x -= item.speed;
+                item.floatOffset += 0.05;
+                const floatY = item.y + Math.sin(item.floatOffset) * 6;
+
+                if (checkCollision(player, { x: item.x, y: floatY, width: item.width, height: item.height })) {
+                    score += 25;
+                    audio.playCollectSound();
+                    addParticle(item.x, floatY, (item.type === 'violin') ? '🎻 +25' : '🎹 +25', '#f59e0b');
+                    collectibles.splice(i, 1);
+                    updateHUD();
+                    continue;
+                }
+
+                if (item.x < -50) {
+                    collectibles.splice(i, 1);
+                }
+            }
+
+            for (let i = floatingParticles.length - 1; i >= 0; i--) {
+                const p = floatingParticles[i];
+                p.y += p.vy;
+                p.alpha -= 0.025;
+                if (p.alpha <= 0) {
+                    floatingParticles.splice(i, 1);
+                }
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (level === 1) {
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                bgGrad.addColorStop(0, '#0f172a');
+                bgGrad.addColorStop(0.5, '#1e1b4b');
+                bgGrad.addColorStop(1, '#311b92');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else {
+                const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                bgGrad.addColorStop(0, '#020617');
+                bgGrad.addColorStop(0.6, '#0f172a');
+                bgGrad.addColorStop(1, '#0284c7');
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 5; i++) {
+                const y = 140 + i * 22;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            if (!isRunning) {
+                bgOffset += 0.8;
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.15)';
+                ctx.font = '28px Fredoka';
+                ['🎵', '🎶', '🎼', '🎻', '🎹'].forEach((sym, idx) => {
+                    const x = (idx * 160 - (bgOffset % (canvas.width + 100)) + canvas.width) % (canvas.width + 100);
+                    const y = 120 + Math.sin((bgOffset * 0.05) + idx) * 20 + (idx % 3) * 40;
+                    ctx.fillText(sym, x, y);
+                });
+            } else {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.font = '36px Fredoka';
+                ['🎵', '🎶', '🎼', '🎻', '🎹'].forEach((sym, idx) => {
+                    const x = (idx * 180 - (bgOffset % (canvas.width + 100)) + canvas.width) % (canvas.width + 100);
+                    ctx.fillText(sym, x, 100 + (idx % 3) * 40);
+                });
+            }
+
+            const floorGrad = ctx.createLinearGradient(0, 384, 0, canvas.height);
+            floorGrad.addColorStop(0, '#1e293b');
+            floorGrad.addColorStop(1, '#020617');
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, 384, canvas.width, canvas.height - 384);
+
+            ctx.fillStyle = (level === 1) ? '#818cf8' : '#38bdf8';
+            ctx.fillRect(0, 382, canvas.width, 3);
+
+            collectibles.forEach(item => {
+                const floatY = item.y + Math.sin(item.floatOffset) * 6;
+                ctx.save();
+                ctx.translate(item.x + 18, floatY + 18);
+                ctx.font = '32px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText((item.type === 'violin') ? '🎻' : '🎹', 0, 0);
+                ctx.restore();
+            });
+
+            obstacles.forEach(obs => {
+                ctx.save();
+                ctx.fillStyle = obs.passed ? 'rgba(74, 222, 128, 0.3)' : 'rgba(244, 114, 182, 0.3)';
+                ctx.strokeStyle = obs.passed ? '#4ade80' : '#f472b6';
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.roundRect(obs.x, obs.y, obs.width, obs.height, 12);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.font = '24px Fredoka';
+                ctx.textAlign = 'center';
+                ctx.fillText('🎵', obs.x + obs.width / 2, obs.y + 26);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 13px Fredoka';
+                ctx.fillText(obs.noteName, obs.x + obs.width / 2, obs.y - 8);
+
+                ctx.restore();
+            });
+
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(player.width / 2, player.height + 2, 20, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.font = '42px sans-serif';
+            ctx.fillText((level === 1) ? '🧑‍🎤' : '🎼', -4, player.height - 6);
+
+            ctx.restore();
+
+            floatingParticles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                ctx.fillStyle = p.color;
+                ctx.font = 'bold 16px Fredoka';
+                ctx.fillText(p.text, p.x, p.y);
+                ctx.restore();
+            });
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function endGame(won) {
+            isRunning = false;
+            const endOverlay = document.getElementById('endOverlay');
+            const endTitle = document.getElementById('endTitle');
+            const endSubtitle = document.getElementById('endSubtitle');
+            const endIcon = document.getElementById('endIcon');
+
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalNotes').innerText = notesPassed;
+
+            if (lives <= 0) {
+                endIcon.innerText = '💔';
+                endTitle.innerText = "Oyun Bitti!";
+                endTitle.className = "text-3xl md:text-4xl font-extrabold text-red-500 mb-2";
+                endSubtitle.innerText = "Notaya takıldın! Tekrar deneyerek müziği devam ettir!";
+            }
+            endOverlay.classList.remove('hidden');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+                keys.jump = true;
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = false;
+        });
+
+        const setupTouchBtn = (btnId, keyName) => {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+            btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            btn.addEventListener('mousedown', () => { keys[keyName] = true; });
+            btn.addEventListener('mouseup', () => { keys[keyName] = false; });
+        };
+
+        setupTouchBtn('btnLeft', 'left');
+        setupTouchBtn('btnRight', 'right');
+        setupTouchBtn('btnJump', 'jump');
+
+        document.getElementById('muteBtn').addEventListener('click', () => {
+            audio.isMuted = !audio.isMuted;
+            const muteBtn = document.getElementById('muteBtn');
+            if (audio.isMuted) {
+                muteBtn.innerHTML = `<i class="fa-solid fa-volume-xmark text-red-400"></i>`;
+            } else {
+                muteBtn.innerHTML = `<i class="fa-solid fa-volume-high"></i>`;
+            }
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            resetGame();
+            isRunning = true;
+            audio.init();
+        });
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            resetGame();
+            isRunning = true;
+        });
+
+        // Start Game Engine Loop
+        gameLoop();
+    </script>
+</body>
+</html>
