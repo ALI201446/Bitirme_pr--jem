@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dolphins Technologies — Kurumsal Profil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0D13;
+    --panel: #10141C;
+    --hairline: rgba(231, 236, 242, 0.09);
+    --neon-cyan: #46FFE0;
+    --neon-violet: #9D5BFF;
+    --text-main: #E7ECF2;
+    --text-muted: #8891A0;
+    --joke: #FF7A7A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  /* Mat doku: hafif gren efekti */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 1;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    letter-spacing: -0.01em;
+  }
+
+  /* ---- Yunus amblemi (özgün, elle tasarlanmış çizim) ---- */
+  .dolphin-mark path { fill: var(--neon-cyan); }
+  .dolphin-mark circle { fill: var(--bg); }
+
+  .glow {
+    filter: drop-shadow(0 0 10px rgba(70, 255, 224, 0.55))
+            drop-shadow(0 0 26px rgba(70, 255, 224, 0.25));
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(70,255,224,0.5)) drop-shadow(0 0 24px rgba(70,255,224,0.22)); }
+    50%      { filter: drop-shadow(0 0 16px rgba(70,255,224,0.75)) drop-shadow(0 0 38px rgba(70,255,224,0.35)); }
+  }
+
+  .hero-emblem { animation: pulse-glow 5s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-emblem { animation: none; }
+  }
+
+  /* Arka plandaki soluk yunus deseni */
+  .bg-pattern {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    opacity: 0.05;
+  }
+
+  /* ---- Üst şerit ---- */
+  header {
+    position: relative;
+    z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.4rem 6vw 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .header-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  /* ---- Kahraman bölüm ---- */
+  .hero {
+    position: relative;
+    z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 7vh 6vw 8vh;
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .hero-label {
+    font-size: 0.9rem;
+    color: var(--neon-cyan);
+    margin-bottom: 1.1rem;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 4.6vw, 3.2rem);
+    font-weight: 600;
+    color: var(--text-main);
+    max-width: 15ch;
+  }
+
+  .hero-sub {
+    margin-top: 1.4rem;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 46ch;
+  }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* ---- Ana içerik ---- */
+  main {
+    position: relative;
+    z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 6vw 10vh;
+  }
+
+  section {
+    padding: 4rem 0;
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    grid-template-columns: 0.85fr 2fr;
+    gap: 2.5rem;
+  }
+
+  section:first-child { border-top: 1px solid var(--hairline); }
+
+  .section-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1rem;
+    color: var(--text-muted);
+    padding-top: 0.2rem;
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+    font-weight: 600;
+    max-width: 24ch;
+  }
+
+  .body-text {
+    margin-top: 1.1rem;
+    color: var(--text-muted);
+    max-width: 58ch;
+    font-size: 1rem;
+  }
+
+  .founder-row {
+    margin-top: 1.6rem;
+    display: flex;
+    gap: 1.4rem;
+    align-items: center;
+  }
+
+  .founder-seal {
+    flex-shrink: 0;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 1px solid rgba(70, 255, 224, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+  }
+
+  .founder-seal svg { width: 28px; height: 28px; }
+
+  .founder-name {
+    font-family: 'Fraunces', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .founder-role {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin-top: 0.15rem;
+  }
+
+  .partner-block {
+    margin-top: 1.6rem;
+    background: var(--panel);
+    border-radius: 10px;
+    border: 1px solid var(--hairline);
+    padding: 1.5rem 1.7rem;
+  }
+
+  .partner-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .partner-tag {
+    display: inline-block;
+    margin-top: 0.9rem;
+    font-size: 0.82rem;
+    color: var(--neon-violet);
+    border: 1px solid rgba(157, 91, 255, 0.4);
+    border-radius: 999px;
+    padding: 0.28rem 0.8rem;
+  }
+
+  footer {
+    position: relative;
+    z-index: 2;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.6rem 6vw 3.4rem;
+    border-top: 1px solid var(--hairline);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 680px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-visual { order: -1; }
+    section { grid-template-columns: 1fr; gap: 0.8rem; }
+    .founder-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Arka planda soluk tekrarlayan yunus deseni -->
+<svg class="bg-pattern" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <g id="dot-dolphin">
+      <path d="M0,42 C6,14 34,2 62,4 C80,5 92,16 96,30 L112,20 L102,34 L118,44 L100,42 C94,50 82,54 68,52 C60,60 48,62 38,58 C24,63 10,60 4,52 C10,48 14,42 14,36 C6,40 2,42 0,42 Z" />
+    </g>
+  </defs>
+  <use href="#dot-dolphin" x="40" y="60" width="130" height="70" fill="#46FFE0"/>
+  <use href="#dot-dolphin" x="740" y="140" width="110" height="60" fill="#9D5BFF" transform="scale(-1,1) translate(-1700,0)"/>
+  <use href="#dot-dolphin" x="120" y="520" width="150" height="80" fill="#46FFE0"/>
+  <use href="#dot-dolphin" x="820" y="640" width="120" height="65" fill="#9D5BFF" transform="scale(-1,1) translate(-1780,0)"/>
+  <use href="#dot-dolphin" x="480" y="360" width="90" height="50" fill="#46FFE0"/>
+</svg>
+
+<header>
+  <div class="wordmark">
+    <svg class="dolphin-mark" width="26" height="26" viewBox="0 0 130 90" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2,58 C10,20 46,4 82,6 C104,7 120,20 126,36 L110,30 L118,44 L96,50 C90,60 74,66 58,63 C46,72 30,73 20,66 C10,70 3,66 0,58 Z"/>
+      <circle cx="16" cy="52" r="2.6"/>
+    </svg>
+    Dolphins Technologies
+  </div>
+  <div class="header-label">Kurumsal profil</div>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-label">Kariyer keşfi botunun arkasındaki şirket</div>
+    <h1>Zekayı derinlerden çıkarıyoruz.</h1>
+    <p class="hero-sub">Dolphins Technologies, yapay zeka destekli ürünler tasarlayan bir teknoloji şirketidir. Bu sayfa, kurucu ve şirket hakkında kısa bir tanıtım sunmak amacıyla hazırlanmıştır.</p>
+  </div>
+  <div class="hero-visual">
+    <svg class="hero-emblem glow" width="150" height="150" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="96" fill="none" stroke="#46FFE0" stroke-width="1" opacity="0.5"/>
+      <circle cx="100" cy="100" r="84" fill="none" stroke="#46FFE0" stroke-width="0.6" opacity="0.3"/>
+      <g transform="translate(35,58) scale(0.98)">
+        <path d="M2,58 C10,20 46,4 82,6 C104,7 120,20 126,36 L110,30 L118,44 L96,50 C90,60 74,66 58,63 C46,72 30,73 20,66 C10,70 3,66 0,58 Z" fill="#46FFE0"/>
+        <circle cx="16" cy="52" r="2.8" fill="#0A0D13"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<main>
+  <section>
+    <div class="section-label">Kurucu</div>
+    <div>
+      <h2>Tek kişilik bir mühendislik ekibi</h2>
+      <div class="founder-row">
+        <div class="founder-seal">
+          <svg viewBox="0 0 130 90" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2,58 C10,20 46,4 82,6 C104,7 120,20 126,36 L110,30 L118,44 L96,50 C90,60 74,66 58,63 C46,72 30,73 20,66 C10,70 3,66 0,58 Z" fill="#46FFE0"/>
+            <circle cx="16" cy="52" r="2.6" fill="#10141C"/>
+          </svg>
+        </div>
+        <div>
+          <div class="founder-name">Dozdar</div>
+          <div class="founder-role">Kurucu ve Yazılım Geliştirici</div>
+        </div>
+      </div>
+      <p class="body-text">Dolphins Technologies'i kuran ve bu Discord botunu baştan sona geliştiren yazılımcıdır. Soru akışından yapay zeka entegrasyonuna kadar ürünün tamamı kendisine aittir.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Şirket profili</div>
+    <div>
+      <h2>Küçük ölçekli, odaklı bir yapı</h2>
+      <p class="body-text">Dolphins Technologies, yapay zeka destekli ürünler ve dijital deneyimler geliştirmeye odaklanan bir teknoloji şirketidir. Şirketin bilinen ilk ürünü, kullanıcıların ilgi alanlarına göre kariyer önerileri sunan bu Discord botudur.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">İş birlikleri</div>
+    <div>
+      <h2>Kamuoyunda dolaşan bir söylenti</h2>
+      <div class="partner-block">
+        <div class="partner-title">Sony ile yürütüldüğü iddia edilen bir Ar-Ge projesi</div>
+        <p class="body-text" style="margin-top: 0.6rem;">Herhangi bir resmi iş birliği bulunmamaktadır.</p>
+        <span class="partner-tag">Kurumsal şaka — gerçek değildir</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Dolphins Technologies</span>
+  <span>Bu şirket kurgusaldır; sayfa tanıtım ve eğlence amaçlı hazırlanmıştır.</span>
+</footer>
+
+</body>
+</html>
